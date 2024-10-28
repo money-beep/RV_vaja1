@@ -1,0 +1,9 @@
+Prva vrednost - zakodiramo celo vrednost na zacetku z osmimi biti.
+
+ponovitve - razlike med vrednosti je enako 0 v tem primeru (01 napisemo, da vemo, da gre za ponovitev)
+
+absolutno kodiranje - uporabimo kadar je razlika vecja od 30 (10 napisemo in nato z 9 biti napisemo razliko)
+
+dekompresija - sestevas
+
+navodila za porocilo in testiranje mas dano v PDF-u.
