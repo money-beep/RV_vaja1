@@ -17,34 +17,36 @@ int compress(int *array, int arraySize, bitStack *cValues) {
         ((cValues->bits[cValues->index] << 1) | ((firstNumber >> i) & 1));
   }
   cValues->top = 8;
-  int8_t iterator = 1; // iterator for array of differences
+  int iterator = 1; // iterator for array of differences
 
-  int8_t numberHolder = 0;
+  int numberHolder = 0;
   while (iterator < arraySize) {
     // take next number
     numberHolder = array[iterator];
+
+    printf("Processing iterator %d with value %d\n", iterator, numberHolder);
     // if repeating numbers
     if (numberHolder == 0) {
       // found at least one
       int repeatCount = 0;
       // loop till it isnt the same number
-      while (iterator + repeatCount < arraySize && repeatCount < 8 &&
+      while (iterator + repeatCount < arraySize &&
              numberHolder == array[iterator + repeatCount]) {
+        if (repeatCount == 8) {
+          break;
+        }
         repeatCount++;
       }
-      // printf("repeating count: %d\n", repeatCount);
       iterator = iterator + repeatCount;
       repeatingDifferences(cValues, repeatCount);
       iterator--;
     }
     // if number needs 9 bits to write
     else if (numberHolder <= -30 || numberHolder >= 30) {
-      // printf("found one large number: %d\n", numberHolder);
       absoluteEncoding(cValues, numberHolder);
     }
     // else write normal
     else if (numberHolder != 0) {
-      // printf("found one difference: %d, ", numberHolder);
       numberDifferences(cValues, numberHolder);
     }
     iterator++;

@@ -32,8 +32,6 @@ void ensureSpace(bitStack *cValues) {
 
 void ensureReadSpace(bitStack *cValues) {
   if (cValues->top == 32) {
-    printf("Changing index!");
-    printf("top: %d, index: %d\n", cValues->top, cValues->index);
     cValues->index++;
     cValues->top = 0;
   }

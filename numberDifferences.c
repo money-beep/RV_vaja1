@@ -51,18 +51,12 @@ void numberDifferences(bitStack *cValues, int number) {
   for (int i = 0; i < (int)(sizeof(range) / sizeof(range[0])); i++) {
     if (number >= range[i].lowNum && number <= range[i].highNum) {
       int rangeIndex = 0;
-      // if number is bigger than 6, add 2 to range between numbers,
-      // then add the difference between the number and the low number of the
-      // range
-      if (number > 6) {
-        int lowerRange = abs(range[i - 1].lowNum - range[i - 1].highNum) + 2;
-        int index = range[i].lowNum - number;
-        rangeIndex = lowerRange + index + 1;
-      } // if number is between 0 and 6,  set index to number + 1
-      else if (number > 0 && number < 7) {
-        rangeIndex = number + 1;
+
+      if (number < 0) {
+        rangeIndex = abs(range[i].lowNum) - abs(number);
       } else {
         rangeIndex = number - range[i].lowNum;
+        rangeIndex |= 1 << (range[i].bits - 1);
       }
 
       // 00 - 2, 01 - 3, 10 - 4, 11 - 5
