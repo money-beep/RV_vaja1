@@ -24,7 +24,6 @@ int compress(int *array, int arraySize, bitStack *cValues) {
     // take next number
     numberHolder = array[iterator];
 
-    printf("Processing iterator %d with value %d\n", iterator, numberHolder);
     // if repeating numbers
     if (numberHolder == 0) {
       // found at least one

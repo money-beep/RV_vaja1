@@ -11,11 +11,14 @@ void compress(int *array, int arraySize, bitStack *cValues);
 int *decompress(bitStack *cValues, int arraySize);
 
 double compressionRatio(bitStack *cValues, int numElements) {
-  return (double)(cValues->index * 32 + cValues->top) / (numElements * 8);
+  return (double)((cValues->index - 1) * 32 + cValues->top) /
+         (numElements * 32);
 }
 
 void outputToFile(int *numArray, int *diffArray, int *decompressedNumbers,
-                  bitStack *cValues, int arraySize) {
+                  bitStack *cValues, int arraySize, double compTime,
+                  double DecompTime) {
+
   // output to file first numbers, differences, compressed bits, decompressed
   // numbers
   FILE *f = fopen("output.txt", "w");
@@ -25,13 +28,13 @@ void outputToFile(int *numArray, int *diffArray, int *decompressedNumbers,
     fprintf(f, "%d ", numArray[i]);
   }
 
-  fprintf(f, "\n\n Differences:\n");
+  fprintf(f, "\n\nDifferences:\n");
 
   for (int i = 0; i < arraySize; i++) {
     fprintf(f, "%d ", diffArray[i]);
   }
 
-  fprintf(f, "\n\n Compressed bits:\n");
+  fprintf(f, "\n\nCompressed bits:\n");
 
   for (int j = 0; j <= cValues->index; j++) {
     for (int i = 0; i <= 31; i++) {
@@ -40,11 +43,17 @@ void outputToFile(int *numArray, int *diffArray, int *decompressedNumbers,
     fprintf(f, "\n");
   }
 
-  fprintf(f, "\n\n Decompressed numbers:\n");
+  fprintf(f, "\n\nDecompressed numbers:\n");
 
   for (int i = 0; i < arraySize; i++) {
     fprintf(f, "%d ", decompressedNumbers[i]);
   }
+
+  fprintf(f, "\n\nCompression ratio: %f\n",
+          compressionRatio(cValues, arraySize));
+
+  fprintf(f, "Compression time: %f\n", compTime);
+  fprintf(f, "Decompression time: %f\n", DecompTime);
 
   fclose(f);
 }
@@ -86,7 +95,7 @@ int main() {
   }
 
   for (int i = 1; i < answerCount; i++) {
-    minNum = numArray[i - 1] - (answerDiff / 2);
+    minNum = numArray[i - 1] - (answerDiff);
     numArray[i] = minNum + rand() % answerDiff;
 
     if (numArray[i] < 0) {
@@ -100,7 +109,7 @@ int main() {
     diffArray[i] = numArray[i] - numArray[i - 1];
   }
 
-  printf("Original numbers:\n");
+  /*printf("Original numbers:\n");
   for (int i = 0; i < answerCount; i++) {
     printf("%d ", numArray[i]);
   }
@@ -108,7 +117,7 @@ int main() {
   for (int i = 0; i < answerCount; i++) {
     printf("%d ", diffArray[i]);
   }
-  printf("\n");
+  printf("\n");*/
 
   bitStack *cValues = (bitStack *)malloc(sizeof(bitStack));
   cValues->size = 2;
@@ -116,19 +125,30 @@ int main() {
   cValues->index = 0;
   cValues->top = 0;
 
+  clock_t startComp, endComp, startDecomp, endDecomp;
+  startComp = clock();
   printf("Compressing...\n");
   compress(diffArray, answerCount, cValues);
+  endComp = clock();
 
   printf("Decompressing...\n");
-  int *decompressedNumbers;
-  decompressedNumbers = decompress(cValues, answerCount);
 
-  printf("Decompressed numbers:\n");
-  for (int i = 0; i < answerCount; i++) {
-    printf("%d ", decompressedNumbers[i]);
-  }
+  startDecomp = clock();
+  int *decompressedNumbers = decompress(cValues, answerCount);
+  endDecomp = clock();
+
+  /*printf("Decompressed numbers:\n");
+   for (int i = 0; i < answerCount; i++) {
+     printf("%d ", decompressedNumbers[i]);
+   }*/
+  double compTime, decompTime;
+  compTime = (double)(endComp - startComp) / CLOCKS_PER_SEC;
+  decompTime = (double)(endDecomp - startDecomp) / CLOCKS_PER_SEC;
 
   printf("Compression ratio is: %f\n", compressionRatio(cValues, answerCount));
+  printf("Compression time: %f\n", compTime);
+  printf("Decompression time: %f\n", decompTime);
 
-  outputToFile(numArray, diffArray, decompressedNumbers, cValues, answerCount);
+  outputToFile(numArray, diffArray, decompressedNumbers, cValues, answerCount,
+               compTime, decompTime);
 }

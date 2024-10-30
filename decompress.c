@@ -43,8 +43,6 @@ int *decompress(bitStack *cValues, int arraySize) {
       if (!((cValues->bits[cValues->index] >> cValues->top) & 1)) {
         cValues->top++;
 
-        printf("reading normal difference\n");
-
         int differenceBit = 0;
         for (int i = 0; i < 2; i++) {
           ensureReadSpace(cValues);
@@ -85,8 +83,6 @@ int *decompress(bitStack *cValues, int arraySize) {
       else if ((cValues->bits[cValues->index] >> cValues->top) & 1) {
         cValues->top++;
 
-        printf("reading repeating nubmer\n");
-
         for (int i = 0; i < 3; i++) {
           ensureReadSpace(cValues);
           numberHolder = (numberHolder << 1) |
@@ -113,13 +109,12 @@ int *decompress(bitStack *cValues, int arraySize) {
       if (!((cValues->bits[cValues->index] >> cValues->top) & 1)) {
         cValues->top++;
 
-        printf("reading absolute\n");
         ensureReadSpace(cValues);
         // first bit - sign, other 8 - abs(number)
         bool signBit = (cValues->bits[cValues->index] >> cValues->top) & 1;
         cValues->top++;
 
-        for (int i = cValues->top++; i < cValues->top + 8; i++) {
+        for (int i = 0; i < 8; i++) {
           ensureReadSpace(cValues);
           numberHolder = (numberHolder << 1) |
                          ((cValues->bits[cValues->index] >> cValues->top) & 1);
@@ -131,7 +126,7 @@ int *decompress(bitStack *cValues, int arraySize) {
         dNumIterator++;
       }
       // 11 - end
-      if ((cValues->bits[cValues->index] >> cValues->top) & 1) {
+      else if ((cValues->bits[cValues->index] >> cValues->top) & 1) {
         printf("two bits are 11, finished with decompression.\n");
         // konec
         break;

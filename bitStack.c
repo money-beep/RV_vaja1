@@ -24,7 +24,7 @@ void reallocStack(bitStack *cValues) {
 
 void ensureSpace(bitStack *cValues) {
   // if bit goes over range
-  if (cValues->top == 32) {
+  if (cValues->top >= 32) {
     // call realloc
     reallocStack(cValues);
   }
